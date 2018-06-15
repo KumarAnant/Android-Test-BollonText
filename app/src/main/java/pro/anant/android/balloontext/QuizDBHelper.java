@@ -3,8 +3,12 @@ import pro.anant.android.balloontext.QuizContract.*;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuizDBHelper extends SQLiteOpenHelper {
 
@@ -47,11 +51,11 @@ public class QuizDBHelper extends SQLiteOpenHelper {
         addQuestion(q1);
         Question q2 = new Question("D is correct", "A", "B", "C", "D", 4);
         addQuestion(q1);
-        Question q1 = new Question("A is correct", "A", "B", "C", "D", 1);
+        Question q3 = new Question("A is correct", "A", "B", "C", "D", 1);
         addQuestion(q1);
-        Question q1 = new Question("C is correct", "A", "B", "C", "D", 3);
+        Question q4 = new Question("C is correct", "A", "B", "C", "D", 3);
         addQuestion(q1);
-        Question q1 = new Question("B is correct", "A", "B", "C", "D", 2);
+        Question q5 = new Question("B is correct", "A", "B", "C", "D", 2);
         addQuestion(q1);
 
     }
@@ -65,6 +69,28 @@ public class QuizDBHelper extends SQLiteOpenHelper {
         cv.put(QuestionsTable.COLUMN_OPTION4, question.getOption4());
         cv.put(QuestionsTable.COLUMN_ANSWER_NR, question.getAnswer_nr());
         db.insert(QuestionsTable.TABLE_NAME, null, cv);
+
+    }
+
+    public List<Question> getAllQuestions(){
+        List<Question> questionlist = new ArrayList<>();
+        db = getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + QuestionsTable.TABLE_NAME, null);
+        if(c.moveToFirst()){
+            do{
+                Question question = new Question();
+                question.setQuestion(c.getString(c.getColumnIndex(QuestionsTable.COLUMN_QUESTION)));
+                question.setOption1(c.getString(c.getColumnIndex(QuestionsTable.COLUMN_OPTION1)));
+                question.setOption2(c.getString(c.getColumnIndex(QuestionsTable.COLUMN_OPTION2)));
+                question.setOption3(c.getString(c.getColumnIndex(QuestionsTable.COLUMN_OPTION3)));
+                question.setOption4(c.getString(c.getColumnIndex(QuestionsTable.COLUMN_OPTION4)));
+                question.setAnswer_nr(c.getInt(c.getColumnIndex(QuestionsTable.COLUMN_ANSWER_NR)));
+                questionlist.add(question);
+            }while (c.moveToNext());
+        }
+
+        c.close();
+        return questionlist;
 
     }
 
